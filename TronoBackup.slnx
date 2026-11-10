@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TronoBackup.Application/TronoBackup.Application.csproj" />
+    <Project Path="src/TronoBackup.CLI/TronoBackup.CLI.csproj" />
+    <Project Path="src/TronoBackup.Core/TronoBackup.Core.csproj" />
+  </Folder>
+</Solution>
