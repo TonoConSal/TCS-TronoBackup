@@ -4,4 +4,7 @@
     <Project Path="src/TronoBackup.CLI/TronoBackup.CLI.csproj" />
     <Project Path="src/TronoBackup.Core/TronoBackup.Core.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TronoBackup.Core.Tests/TronoBackup.Core.Tests.csproj" />
+  </Folder>
 </Solution>
