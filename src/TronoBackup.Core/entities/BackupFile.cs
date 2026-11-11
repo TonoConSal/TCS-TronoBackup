@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 
 namespace TronoBackup.Core.Entities
 {
@@ -8,16 +7,18 @@ namespace TronoBackup.Core.Entities
         public string RelativePath { get; }
         public long SizeInBytes { get; }
         public string Sha256 { get; }
-        public bool IsValid { get; private set; }
 
-        public bool IsValidHash(string sha256)
+        private static bool IsValidHash(string sha256)
         {
             if (string.IsNullOrWhiteSpace(sha256))
                 return false;
             if (sha256.Length != 64)
                 return false;
-            if (!Uri.IsHexDigit(sha256[0]))
-                return false;
+            foreach (char c in sha256)
+            {
+                if (!Uri.IsHexDigit(c))
+                    return false;
+            }
             return true;
         }
 
@@ -30,27 +31,15 @@ namespace TronoBackup.Core.Entities
             //Validations
             if (string.IsNullOrWhiteSpace(relativePath))
             {
-                IsValid = false;
                 throw new ArgumentException("La ruta no puede estar vacía.", nameof(relativePath));
             }
             else if (sizeInBytes < 0)
             {
-                IsValid = false;
                 throw new ArgumentOutOfRangeException(nameof(sizeInBytes));
             }
             else if (!IsValidHash(sha256))
             {
-                IsValid = false;
                 throw new ArgumentException("El hash SHA-256 no es válido.", nameof(sha256));
-            }
-            else
-            {
-                IsValid = true;
-            }
-
-            if (IsValid == false)
-            {
-                throw new ArgumentException("El archivo de respaldo no es válido.");
             }
         }
     }

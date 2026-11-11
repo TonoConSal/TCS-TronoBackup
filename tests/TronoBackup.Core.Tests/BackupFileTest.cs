@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 using TronoBackup.Core.Entities;
-using TronoBackup.Core.Enums;
 
 namespace TronoBackup.Core.Tests
 {
@@ -19,7 +16,6 @@ namespace TronoBackup.Core.Tests
             // Act
             BackupFile backupFile = new BackupFile(path, sizeInBytes, sha256);
             // Assert
-            Assert.True(backupFile.IsValid);
             Assert.Equal(path, backupFile.RelativePath);
             Assert.Equal(sizeInBytes, backupFile.SizeInBytes);
             Assert.Equal(sha256, backupFile.Sha256);
@@ -35,24 +31,24 @@ namespace TronoBackup.Core.Tests
             Assert.Throws<ArgumentOutOfRangeException>(() => new BackupFile(path, sizeInBytes, sha256));
         }
         [Fact]
-        public void Create_ShouldThrowException_WhenSha256IsInvalid()
+        public void Create_ShouldThrowException_WhenSha256HasInvalidLength()
         {
             // Arrange
-            string path = "test/file.txt";
+            string relativePath = "test/file.txt";
             long sizeInBytes = 1024;
-            string sha256 = new string('z', 64);
+            string sha256 = "aaaaaaaaaaaaaaaaaa";
             // Act & Assert
-            Assert.Throws<ArgumentException>(() => new BackupFile(path, sizeInBytes, sha256));
+            Assert.Throws<ArgumentException>(() => new BackupFile(relativePath, sizeInBytes, sha256));
         }
         [Fact]
         public void Create_ShouldThrowException_WhenHashContainsInvalidCharacters()
         {
             // Arrange
-            string path = "test/file.txt";
+            string relativePath = "test/file.txt";
             long sizeInBytes = 1024;
-            string sha256 = new string('z', 64);
+            string sha256 = "a" + new string('z', 63);
             // Act & Assert
-            Assert.Throws<ArgumentException>(() => new BackupFile(path, sizeInBytes, sha256));
+            Assert.Throws<ArgumentException>(() => new BackupFile(relativePath, sizeInBytes, sha256));
         }
     }
 }
