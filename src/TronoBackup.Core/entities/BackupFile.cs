@@ -1,34 +1,57 @@
 ﻿using System;
-using System.Security.Cryptography.X509Certificates;
+using System.Runtime.CompilerServices;
 
-public class BackupFile
+namespace TronoBackup.Core.Entities
 {
-    public string RelativePath { get; private set; }
-    public long SizeInBytes { get; private set; }
-    public string Sha256 { get; private set; }
-
-    public static bool TryCreate(string relativePath, long sizeInBytes, string sha256, out BackupFile backupFile)
+    public class BackupFile
     {
-        backupFile = null;
-        if (string.IsNullOrWhiteSpace(relativePath))
-            return false;
-        if (sizeInBytes < 0)
-            return false;
-        if (string.IsNullOrWhiteSpace(sha256))
-            return false;
-        if (sha256.Length != 64 || !System.Text.RegularExpressions.Regex.IsMatch(sha256, "^[a-zA-Z0-9]+$"))
-            return false;
-        backupFile = new BackupFile
-        {
-            RelativePath = relativePath,
-            SizeInBytes = sizeInBytes,
-            Sha256 = sha256
-        };
-        return true;
-    }
+        public string RelativePath { get; }
+        public long SizeInBytes { get; }
+        public string Sha256 { get; }
+        public bool IsValid { get; private set; }
 
-    public BackupFile()
-	{
-		
-	}
+        public bool IsValidHash(string sha256)
+        {
+            if (string.IsNullOrWhiteSpace(sha256))
+                return false;
+            if (sha256.Length != 64)
+                return false;
+            if (!Uri.IsHexDigit(sha256[0]))
+                return false;
+            return true;
+        }
+
+        public BackupFile(string relativePath, long sizeInBytes, string sha256)
+        {
+            RelativePath = relativePath;
+            SizeInBytes = sizeInBytes;
+            Sha256 = sha256;
+
+            //Validations
+            if (string.IsNullOrWhiteSpace(relativePath))
+            {
+                IsValid = false;
+                throw new ArgumentException("La ruta no puede estar vacía.", nameof(relativePath));
+            }
+            else if (sizeInBytes < 0)
+            {
+                IsValid = false;
+                throw new ArgumentOutOfRangeException(nameof(sizeInBytes));
+            }
+            else if (!IsValidHash(sha256))
+            {
+                IsValid = false;
+                throw new ArgumentException("El hash SHA-256 no es válido.", nameof(sha256));
+            }
+            else
+            {
+                IsValid = true;
+            }
+
+            if (IsValid == false)
+            {
+                throw new ArgumentException("El archivo de respaldo no es válido.");
+            }
+        }
+    }
 }
